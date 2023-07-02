@@ -1,4 +1,3 @@
-import { any } from "joi";
 import { Controller, Get } from "../../core/decorators";
 import WalletClassificationService from "./wallet-classification.service";
 import { Param } from "@nestjs/common";
@@ -19,6 +18,6 @@ export default class WalletClassificationController {
     model: ClassificationResDTO,
   })
   getTokenConfigurations(@Param("address") address: string, @Param("network") network: string): Promise<any> {
-    return this._walletClassificationService.classify({ network, wallet: address })
+    return this._walletClassificationService.classify({ network, walletAddress: address })
   }
 }

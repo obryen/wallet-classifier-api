@@ -8,5 +8,5 @@ export class GetClassificationDto {
     @ApiProperty()
     @IsString()
     @IsEthereumAddress()
-    wallet: string
+    walletAddress: string
 }

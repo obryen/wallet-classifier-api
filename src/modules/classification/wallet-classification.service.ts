@@ -5,13 +5,19 @@ import { GetClassificationDto } from "./dto/request";
 import { ClassificationDTO, ClassificationResDTO } from "./dto/response";
 import { WalletClassification } from "../token-configuration/token-configuration.entity";
 import CONFIG from "../../config";
+import * as util from 'util'
+import { BadRequestErrorResponseDTO } from "src/core/exceptions/response";
+import { BadRequestException, InternalServerErrorException } from "src/core/exceptions";
 
 const GET_BALANCE_ABI = 'function balanceOf(address) view returns (uint256)';
 @Injectable()
 export default class WalletClassificationService {
+    logger: any
     constructor(
         private _tokenConfigurationService: TokenConfigurationService
-    ) { }
+    ) {
+        this.logger = new Logger('WalletClassificationService');
+    }
 
     async classify(dto: GetClassificationDto) {
         // get network type // mainnet or tesnet
@@ -23,47 +29,37 @@ export default class WalletClassificationService {
             const tokenConfigurations = await this._tokenConfigurationService.getAll();
             const classifications: ClassificationDTO[] = await Promise.all(
                 tokenConfigurations.map(async (tokenConfiguration) => {
-                    const balanceWei = await provider.getBalance(dto.wallet);
-                    const balanceEther = ethers.formatUnits(balanceWei, cryptoCurrency);
-                    const status = Number(balanceEther) > tokenConfiguration.threshold ? WalletClassification.GOD_MODE : WalletClassification.MORTAL;
-                    const returnData: ClassificationDTO = {
-                        network: tokenConfiguration.network,
+                    const tokenContract = new ethers.Contract(tokenConfiguration.tokenAddress, [this.getABI(tokenConfiguration.abi)], provider);
+                    const balance = await tokenContract.balanceOf(dto.walletAddress);
+                    const balanceNumber = parseFloat(ethers.formatUnits(balance, 0));
+
+                    // Classify the wallet based on the threshold
+                    const classification = balanceNumber >= tokenConfiguration.threshold ? tokenConfiguration.classification : WalletClassification.MORTAL;
+                    return {
+                        network: dto.network,
                         threshold: tokenConfiguration.threshold,
-                        balance: balanceEther,
-                        currency: cryptoCurrency,
-                        status,
-                    }
-                    return returnData;
+                        balance: balanceNumber,
+                        status: classification,
+                    };
                 }),
             );
 
             return {
-                wallet: dto.wallet,
+                wallet: dto.walletAddress,
                 classifications,
             }
         } catch (e) {
-            Logger.log('error when using alchemy provider: ', e);
-            return 'something went wrong'
+            this.logger.error(`error when using ${CONFIG.APP.ALCHEMY_API} provider: `, util.inspect(e));
+            throw new InternalServerErrorException('Something failed at [WalletClassificationService][classify]')
         }
 
     }
 
-    private validateInputs(walletAddress: string, network: string) {
-        if (!walletAddress || !network) {
-            return false;
+    getABI(abi: string) {
+        if (abi === 'ERC-20') {
+            return 'function balanceOf(address) view returns (uint256)'
+        } else {
+            throw new BadRequestException('Unsuported protocal');
         }
-
-        const walletAddressRegex = /^0x[a-fA-F0-9]{40}$/;
-        if (!walletAddressRegex.test(walletAddress)) {
-            return false;
-        }
-
-        const supportedNetworks = ['ethereum', 'binance'];
-        if (!supportedNetworks.includes(network.toLowerCase())) {
-            return false;
-        }
-
-        return true;
     }
-
 }
