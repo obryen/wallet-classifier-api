@@ -4,7 +4,6 @@ export const configSchema = Joi.object({
     NODE_ENV: Joi.string().required(),
     ACCESS_KEY: Joi.string().required(),
     ALCHEMY_API: Joi.string().required(),
-    ALECHEMY_API: Joi.string().required(),
     APP_NAME: Joi.string().required(),
     APP_PORT: Joi.number().required(),
     APP_VERSION: Joi.string().required(),
