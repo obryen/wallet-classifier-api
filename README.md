@@ -1,4 +1,4 @@
-# Base Service for NestJS
+# God Mode API build on Nestjs
 
 This is the boilerplate service for NestJS, intended as a starting point when creating any new backend services using Nest.
 
@@ -14,15 +14,18 @@ This is the boilerplate service for NestJS, intended as a starting point when cr
 - `npm i`
 - `npm run build`
 - `npm run db` (this runs the DB)
-- `npm run db:migrate`
 - `npm run start:dev`
-
+//NB DB is set to sync with entities via ORM , in production migration should be preffered
 ## Features and capabilities
-
-This is an opinionated way of using NestJS. Feedback is welcome in the form of a PR or other discussion channels.
 
 ### Features:
 
+#### Main features: 
+- Token confifuration : allows for admin users (with API keys) to  able to  `create` and `update`  token configurations that specify token addresses as well as the balance threshold for
+each token for use when classifying a wallet. 
+- Wallet classification : allows for any user to  call the API providing their wallet address and receive a list of classifications one for each token we have preset.
+
+### Minor features (Extended from base-project):
 - Standardized configs
 - Extendable Logger
 - Custom decorators over NestJS defaults which combine `@nestjs/swagger` for easy-to-use Swagger UI
@@ -34,14 +37,6 @@ This is an opinionated way of using NestJS. Feedback is welcome in the form of a
   - Logger
 - Custom exceptions and an exception filter that allows throwing exceptions inside the service code which automatically generate and return the appropriate error.
 - Config for TypeORM and Postgres
-
-### Opinions
-
-A few things we prefer doing:
-
-- Every folder that has exports will have an `index.ts` file which manages the exports. This allows us to do something like: `import { useSwagger, useCors } from 'src/core/hooks'` instead of `import useSwagger from 'src/core/hooks/useSwagger'` + `import useCors from 'src/core/hooks/useCors'`.
-- Extend each entity from the base entity. This allows us to keep fields like `created_at` and `updated_at` consistent across all tables.
-- Extend each service from the base service. This allows us to share common functionality across services.
 
 ## Folder Structure
 
