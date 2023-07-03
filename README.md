@@ -21,9 +21,9 @@ The Wallet Classifier API allows users to retrieve a list of classifications bas
 ### Features:
 
 #### Main features: 
-- Token confifuration : allows for admin users (with API keys) to  able to  `create` and `update`  token configurations that specify token addresses as well as the balance threshold for
+- Token configuration : allows for admin users (with API keys) to  able to  `create` and `update`  token configurations that specify token addresses as well as the balance threshold for
 each token for use when classifying a wallet. 
-- Wallet classification : allows for any user to  call the API providing their wallet address and receive a list of classifications one for each token we have preset.
+- Wallet classification: allows for any user to  call the API providing their wallet address and receive a list of classifications one for each token we have preset.
 
 ### Minor features (Extended from base-project):
 - Standardized configs
@@ -39,7 +39,7 @@ each token for use when classifying a wallet.
 - Config for TypeORM and Postgres
 
  ## Potential Improvements
- - *Caching Token Configurations* : To reduce database load and improve response times, implement caching for token configurations. By caching the fetched configurations, subsequent requests can be served from the cache, minimizing the need for frequent database queries.
+ - *Caching Token Configurations*: To reduce database load and improve response times, implement caching for token configurations. By caching the fetched configurations, subsequent requests can be served from the cache, minimizing the need for frequent database queries.
  - *Unit Tests*
  -  *Support for Other Token Standards*: Extend the logic of the API to support token standards other than ERC-20. This could include implementing support for token standards like ERC-721 or BEP-20. By expanding the API's capabilities, users can receive classifications for a broader range of token standards, increasing its usefulness.
 
