@@ -3,7 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import TokenConfigurationEntity from "./token-configuration.entity";
 import { Repository } from "typeorm";
 import { CreateTokenConfigurationReqDTO, UpdateTokentConfigurationReqDTO } from "./dto/request";
-import { Network, isValidTokenAddress, selectNetwork, validateAndRetriveABI } from "../../core/shared/utils";
+import { NetworkTypeEnum, isValidTokenAddress, selectNetwork, validateAndRetriveABI } from "../../core/shared/utils";
 
 @Injectable()
 export default class TokenConfigurationService {
@@ -14,6 +14,9 @@ export default class TokenConfigurationService {
 
   async getAll(): Promise<TokenConfigurationEntity[]> {
     return await this._tokenConfigRepo.find({ where: { deleted: false } });
+  }
+  async getAllByNetworkType(networkType: NetworkTypeEnum): Promise<TokenConfigurationEntity[]> {
+    return await this._tokenConfigRepo.find({ where: { deleted: false, networkType: networkType } });
   }
   async getById(id: number): Promise<TokenConfigurationEntity> {
     return this._tokenConfigRepo.findOne({ where: { id } });
@@ -41,7 +44,7 @@ export default class TokenConfigurationService {
     if (!existinConfiguration) {
       throw new NotFoundException('This token configuration does not exist');
     }
-    if (!isValidTokenAddress(updateConfigPayload.tokenAddress, existinConfiguration.network)) {
+    if (!isValidTokenAddress(updateConfigPayload.tokenAddress)) {
       throw new BadRequestException('Invalid token address')
     }
     const toUpdate = { ...existinConfiguration, ...new TokenConfigurationEntity({ ...updateConfigPayload }) };
@@ -49,14 +52,15 @@ export default class TokenConfigurationService {
   }
 
 
-  validateConfiguration(abi: string, network: string, tokenAddress: string) {
+  validateConfiguration(abi: string, network: string, tokenAddress: string): NetworkTypeEnum {
     validateAndRetriveABI(abi);
     const selectedNetwork = selectNetwork(network);
     if (!selectedNetwork) {
-      throw new BadRequestException(`Network string must include one of ${Object.values(Network)}`)
+      throw new BadRequestException(`Network string must include one of ${Object.values(NetworkTypeEnum)}`)
     }
-    if (!isValidTokenAddress(tokenAddress, selectedNetwork)) {
+    if (!isValidTokenAddress(tokenAddress)) {
       throw new BadRequestException('Invalid token address')
     }
+    return selectedNetwork;
   }
 }

@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Param, UseGuards } from "@nestjs/common";
+import { Body, Param } from "@nestjs/common";
 import { Controller, Get, Post, Put } from "../../core/decorators";
 import {
   GetTokenConfigurationResponseDTO,
@@ -7,7 +7,6 @@ import {
 import TokenConfigurationService from "./token-configuration.service";
 import { CreateTokenConfigurationReqDTO, UpdateTokentConfigurationReqDTO } from "./dto/request";
 import { APIKeyGuard } from "src/core/guards/api-key.guard";
-import { validateAndRetriveABI, isValidTokenAddress, selectNetwork, Network } from "src/core/shared/utils";
 
 
 @Controller({
@@ -34,7 +33,8 @@ export default class TokenConfigurationController {
   })
   // @UseGuards(APIKeyGuard)
   createTokenConfig(@Body() data: CreateTokenConfigurationReqDTO) {
-    this._tokenConfigService.validateConfiguration(data.abi, data.network, data.tokenAddress)
+    const networkType = this._tokenConfigService.validateConfiguration(data.abi, data.network, data.tokenAddress);
+    data.networkType = networkType;
     return this._tokenConfigService.create(data);
   }
 

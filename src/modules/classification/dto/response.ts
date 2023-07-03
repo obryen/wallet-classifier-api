@@ -5,6 +5,7 @@ export class ClassificationDTO {
   threshold: number;
   balance: any;
   status: WalletClassification;
+  tokenAddress:string
 }
 
 export class ClassificationResDTO {

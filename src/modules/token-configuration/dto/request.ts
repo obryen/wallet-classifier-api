@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEnum, IsNotEmpty, IsNumber, IsString } from "class-validator";
 import { WalletClassification } from "../token-configuration.entity";
-import { isNumber } from "lodash";
+import { NetworkTypeEnum } from "../../../core/shared/utils";
 
 
 export class CreateTokenConfigurationReqDTO {
@@ -20,6 +20,7 @@ export class CreateTokenConfigurationReqDTO {
   @ApiProperty()
   @IsEnum(WalletClassification)
   classification: WalletClassification
+  networkType: NetworkTypeEnum
 }
 
 export class UpdateTokentConfigurationReqDTO {

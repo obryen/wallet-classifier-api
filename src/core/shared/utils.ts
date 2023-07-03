@@ -1,8 +1,11 @@
-import { BadRequestException } from "@nestjs/common";
+import { BadRequestException, Logger } from "@nestjs/common";
+import * as util from 'util'
 import * as ethers from "ethers";
 import CONFIG from "../../config";
 
-export enum Network {
+const ERC20_BALANCE_ABI = 'function balanceOf(address) view returns (uint256)';
+
+export enum NetworkTypeEnum {
     Mainnet = "mainnet",
     Goerli = "goerli",
     Sepolia = "sepolia",
@@ -14,13 +17,13 @@ export enum Network {
     OptimismGoerli = "optimism-goerli",
 }
 
-export function selectNetwork(networkString: string): Network | undefined {
-    const networkKeys = Object.keys(Network);
+export function selectNetwork(networkString: string): NetworkTypeEnum | undefined {
+    const networkKeys = Object.keys(NetworkTypeEnum);
 
     for (const key of networkKeys) {
-        const network = Network[key as keyof typeof Network];
+        const network = NetworkTypeEnum[key as keyof typeof NetworkTypeEnum];
 
-        if (networkString.includes(network)) {
+        if (networkString.toLocaleLowerCase().includes(network)) {
             return network;
         }
     }
@@ -30,22 +33,18 @@ export function selectNetwork(networkString: string): Network | undefined {
 
 export function validateAndRetriveABI(abi: string) {
     if (abi === 'ERC-20') {
-        return 'function balanceOf(address) view returns (uint256)'
+        return ERC20_BALANCE_ABI
     } else {
         throw new BadRequestException('Unsuported protocal');
     }
 }
 
-export function isValidTokenAddress(tokenAddress: string, provider): boolean {
+export function isValidTokenAddress(tokenAddress: string): boolean {
     try {
-        // Attempt to create a contract instance with the token address
-        const contract = new ethers.Contract(tokenAddress, [], provider);
-
-        // Check if the contract address is a valid Ethereum address
-        const isValidAddress = ethers.isAddress(contract.address);
-
+        const isValidAddress = ethers.isAddress(tokenAddress);
         return isValidAddress;
     } catch (error) {
+        Logger.error('[isValidTokenAddress] failed:', util.inspect(error))
         return false;
     }
 }

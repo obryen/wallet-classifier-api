@@ -1,10 +1,11 @@
-import { Network } from "../../core/shared/utils";
+import { NetworkTypeEnum } from "../../core/shared/utils";
 import BaseEntity from "../../core/entity/base.entity";
 import { Column, Entity } from "typeorm";
 
 export enum WalletClassification {
   GOD_MODE = "GodMode",
-  MORTAL = "Mortal"
+  MORTAL = "Mortal",
+  ERROR = "Error"
 
 }
 @Entity("token_configuration")
@@ -18,8 +19,8 @@ export default class TokenConfigurationEntity extends BaseEntity {
   @Column({ nullable: false })
   network: string;
 
-  @Column({ nullable: false, enum: Object.values(Network) })
-  networkType: Network;
+  @Column({ nullable: false, enum: Object.values(NetworkTypeEnum) })
+  networkType: NetworkTypeEnum;
 
   @Column({ nullable: false })
   tokenAddress: string;
