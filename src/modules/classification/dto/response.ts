@@ -19,6 +19,6 @@ export class ClassificationResDTO {
   wallet: string;
   @ApiProperty()
   network: string;
-  @ApiProperty()
+  @ApiProperty({ type: [ClassificationDTO] })
   classifications: ClassificationDTO[]
 }
