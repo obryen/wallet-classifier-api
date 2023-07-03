@@ -1,6 +1,6 @@
-# God Mode API build on Nestjs
+# Wallet classifier API build on Nestjs
 
-This is the boilerplate service for NestJS, intended as a starting point when creating any new backend services using Nest.
+The Wallet Classifier API allows users to retrieve a list of classifications based on their wallet address. By providing their wallet address as a parameter, users can receive a comprehensive list of classifications for each token that has been preconfigured.
 
 ## How to use
 
