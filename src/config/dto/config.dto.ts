@@ -7,7 +7,7 @@ export interface ConfigDTO {
         VERSION: string;
         PORT: number;
         ACCESS_KEY: string;
-        ALCHEMY_API: string;
+        ALCHEMY_API_KEY: string;
     };
     DATABASE: DatabaseConfigDTO;
     LOGGING?: LoggingConfigDTO;
